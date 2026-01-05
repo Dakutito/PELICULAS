@@ -1,0 +1,47 @@
+name: Pipeline CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+# Permisos necesarios para que el robot pueda publicar en tu repositorio
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Descargar código
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # 2. Configurar Node
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    # 3. Instalar dependencias (Frontend)
+    - name: Install Frontend Dependencies
+      run: |
+        cd frontend
+        npm ci
+
+    # 4. Construir el proyecto (Crear la carpeta 'build')
+    - name: Build Frontend
+      run: |
+        cd frontend
+        npm run build
+      env:
+        CI: false # Evita que falle por warnings simples
+
+    # 5. DESPLIEGUE A GITHUB PAGES (La parte nueva)
+    - name: Deploy to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: frontend/build # La carpeta que queremos subir
+        branch: gh-pages # La rama donde se verá la página
