@@ -1,48 +1,32 @@
-name: Pipeline CI/CD
+name: Deploy React to GitHub Pages
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
 
-# Permisos necesarios para que el robot pueda publicar en tu repositorio
 permissions:
   contents: write
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Descargar código
-    - name: Checkout
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    # 2. Configurar Node
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: frontend/package-lock.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-    # 3. Instalar dependencias (Frontend)
-    - name: Install Frontend Dependencies
-      run: |
-        cd frontend
-        npm ci
+      - name: Install dependencies
+        run: npm install
 
-    # 4. Construir el proyecto (Crear la carpeta 'build')
-    - name: Build Frontend
-      run: |
-        cd frontend
-        npm run build
-      env:
-        CI: false # Evita que falle por warnings simples
+      - name: Build project
+        run: npm run build
 
-    # 5. DESPLIEGUE A GITHUB PAGES (La parte nueva)
-    - name: Deploy to GitHub Pages
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        folder: frontend/dist # La carpeta que queremos subir
-        branch: gh-pages # La rama donde se verá la página
-
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
