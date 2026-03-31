@@ -18,7 +18,6 @@ function App() {
           <main className="main-content">
             <div className="home-page">
               <h2>Gestión de películas y series</h2>
-              <span>Hecho por Tito Pérez y Alan Moreira</span>
             </div>
 
             <Routes>
