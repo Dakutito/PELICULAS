@@ -17,9 +17,8 @@ function App() {
           <Navbar />
           <main className="main-content">
             <div className="home-page">
-              <h2>Gestión de películas y series</h2>
+              <h2>Gestión de Películas y Series </h2>
             </div>
-
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
